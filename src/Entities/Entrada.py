@@ -6,18 +6,25 @@ from sqlalchemy.sql import func
 from src.database.config import Base
 
 class Entrada(Base):
-    __tablename__="entrada"
-    id_entrada=Column(
+    __tablename__ = "entrada"
+    
+    id_entrada = Column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
-    codigo=Column(String(20), nullable=False, unique=True)
-    precio=Column(Float, nullable=False)
-    reingreso=Column(Boolean, nullable=False, default=False)
-    fecha=Column(DateTime(timezone=True), server_default=func.now())
+    codigo = Column(String(20), nullable=False, unique=True)
+    precio = Column(Float, nullable=False)
+    reingreso = Column(Boolean, nullable=False, default=False)
+    fecha = Column(DateTime(timezone=True), server_default=func.now())
 
-    id_titular = Column (
-        UUID(as_uuid=True), ForeignKey("titular.id_titular"),nullable=False
+    # Relación con Titular
+    id_titular = Column(
+        UUID(as_uuid=True), ForeignKey("titular.id_titular"), nullable=False
     )
-    titular=relationship("Titular")
+    titular = relationship("Titular")
 
-    atracciones= relationship("Atraccion", secondary="accede", back_populates="entradas")
+    # Relación muchos a muchos con Atraccion
+    atracciones = relationship(
+        "Atraccion", 
+        secondary="accede", 
+        back_populates="entradas"
+    )
