@@ -21,7 +21,6 @@ class Visitante(Base):
         UUID(as_uuid=True), ForeignKey("titular.id_titular"), nullable=False
     )
 
-    # Trazabilidad
     fecha_creacion = Column(DateTime(timezone=True), server_default=func.now())
     fecha_edicion = Column(DateTime(timezone=True), onupdate=func.now())
     id_usuario_creacion = Column(
@@ -31,7 +30,6 @@ class Visitante(Base):
         UUID(as_uuid=True), ForeignKey("usuario.id_usuario"), nullable=True
     )
 
-    # Relaciones
     titular = relationship("Titular", back_populates="visitantes")
     usuario_creacion = relationship("Usuario", foreign_keys=[id_usuario_creacion])
     usuario_edita = relationship("Usuario", foreign_keys=[id_usuario_edita])
