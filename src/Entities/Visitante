@@ -5,7 +5,6 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from src.database.config import Base
 
-
 class Visitante(Base):
     """Integrante del grupo registrado por un titular."""
 
