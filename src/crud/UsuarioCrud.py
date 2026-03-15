@@ -59,7 +59,7 @@ def obtener_todos() -> List[Usuario]:
     return db.query(Usuario).all()
 
 
-def hay_ususarios() -> bool:
+def hay_usuarios() -> bool:
     return db.query(Usuario).all()
 
 

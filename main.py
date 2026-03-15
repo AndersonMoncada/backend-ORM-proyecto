@@ -11,13 +11,12 @@ from uuid import UUID
 sys.path.insert(0, ".")
 
 "Esto es para la prueba del pull request ya que no me quiere subir a Github"
-
-from src.crud import UsuarioCrud as crud_usuario
-from src.crud import TitularCrud as crud_titular
-from src.crud import VisitanteCrud as crud_visitante
-from src.crud import EntradaCrud as crud_entrada
-from src.crud import SedeCrud as crud_sede
-from src.crud import AtraccionesCrud as crud_atraccion
+import src.crud.UsuarioCrud as crud_usuario
+import src.crud.TitularCrud as crud_titular
+import src.crud.VisitanteCrud as crud_visitante
+import src.crud.EntradaCrud as crud_entrada
+import src.crud.SedeCrud as crud_sede
+import src.crud.AtraccionesCrud as crud_atraccion
 from src.crud.MicroEntidadesCrud import (
     crear_acuatica,
     obtener_todas_acuaticas,
@@ -38,7 +37,7 @@ from src.crud.MicroEntidadesCrud import (
     obtener_fisica_por_id,
     eliminar_fisica,
 )
-from src.database.config import crear_tablas
+from src.database.config import create_tables
 from src.Entities.Usuario import Usuario
 
 
@@ -598,7 +597,7 @@ def menu_principal(usuario: Usuario) -> None:
 
 
 def main() -> None:
-    crear_tablas()
+    create_tables()
     usuario = ingresar_o_crear_usuario()
     if not usuario:
         print("No se pudo iniciar sesión. Saliendo.")
