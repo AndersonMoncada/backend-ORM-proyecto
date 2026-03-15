@@ -16,7 +16,6 @@ class Atraccion(Base):
     nombre = Column(String(150), nullable=False)
     edad_minima = Column(Integer, nullable=False)
     estatura_minima = Column(Float, nullable=False)
-    id_sede = Column(UUID(as_uuid=True), ForeignKey("sede.id_sede"), nullable=False)
 
     sede = relationship("Sede", back_populates="atracciones")
     acuatica = relationship("Acuatica", back_populates="atraccion", uselist=False)

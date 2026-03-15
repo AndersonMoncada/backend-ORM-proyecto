@@ -10,6 +10,7 @@ def crear(
         telefono: str,
         id_usuario_creacion: UUID
 ) -> Optional[Titular]:
+
     cedula_existente= db.query(Titular).filter(Titular.cedula == cedula).first()
     if cedula_existente:
         raise ValueError("La cédula ya existe")
