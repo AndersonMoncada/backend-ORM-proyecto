@@ -30,3 +30,8 @@ class Titular(Base):
     usuario_creacion = relationship("Usuario", foreign_keys=[id_usuario_creacion])
     usuario_edita = relationship("Usuario", foreign_keys=[id_usuario_edita])
     visitantes = relationship("Visitante", back_populates="titular")
+
+
+"""
+Micro Cambio para hacer pull request
+"""
