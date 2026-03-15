@@ -1,7 +1,7 @@
 from typing import List, Optional
 from uuid import UUID
 from src.database.config import SessionLocal
-from src.entities.visitante import Visitante
+from src.Entities.Visitante import Visitante
 
 db = SessionLocal()
 

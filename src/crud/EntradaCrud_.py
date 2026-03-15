@@ -1,7 +1,7 @@
 from typing import List, Optional
 from uuid import UUID
 from src.database.config import SessionLocal
-from src.entities.entrada import Entrada
+from src.Entities.Entrada import Entrada
 db = SessionLocal()
 
 def crear(
