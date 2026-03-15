@@ -2,7 +2,7 @@ import hashlib
 from typing import List, Optional
 from uuid import UUID
 from src.database.config import SessionLocal
-from src.entities.usuario import Usuario
+from src.Entities.Usuario import Usuario
 
 db = SessionLocal()
 
@@ -44,7 +44,7 @@ def login(nombre_usuario: str, contrasena: str) -> Optional[Usuario]:
 
 
 def obtener_por_id(id_usuario: UUID) -> Optional[Usuario]:
-    return db.query(Usuario).filter(Usuario.id_usuarui == id_usuario).first()
+    return db.query(Usuario).filter(Usuario.id_usuario == id_usuario).first()
 
 
 def obtener_por_nombre(nombre_usuario: str) -> Optional[Usuario]:
