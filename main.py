@@ -10,6 +10,8 @@ from uuid import UUID
 
 sys.path.insert(0, ".")
 
+"Esto es para la prueba del pull request ya que no me quiere subir a Github"
+
 from src.crud import UsuarioCrud as crud_usuario
 from src.crud import TitularCrud as crud_titular
 from src.crud import VisitanteCrud as crud_visitante
