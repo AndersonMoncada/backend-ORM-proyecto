@@ -1,10 +1,10 @@
-from src.Entities.usuario import Usuario
-from src.Entities.titular import Titular
-from src.Entities.visitante import Visitante
-from src.Entities.entrada import Entrada
-from src.Entities.sede import Sede
-from src.Entities.atraccion import Atraccion
-from src.Entities.subentidades import Acuatica, Electronica, Mecanica, Fisica
+from src.Entities.Usuario import Usuario
+from src.Entities.Titular import Titular
+from src.Entities.Visitante import Visitante
+from src.Entities.Entrada import Entrada
+from src.Entities.Sede import Sede
+from src.Entities.Atracciones import Atraccion
+from src.Entities.MicroEntidades import Acuatica, Electronica, Mecanica, Fisica
 
 __all__ = [
     "Usuario",
