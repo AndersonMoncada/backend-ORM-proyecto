@@ -1,7 +1,7 @@
 from typing import List, Optional
 from uuid import UUID
 from src.database.config import SessionLocal
-from src.entities.subentidades import Acuatica, Electronica, Mecanica, Fisica
+from src.Entities.MicroEntidades import Acuatica, Electronica, Mecanica, Fisica
 
 db = SessionLocal()
 

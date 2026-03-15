@@ -10,12 +10,13 @@ from uuid import UUID
 
 sys.path.insert(0, ".")
 
-from src.crud import usuario as crud_usuario
-from src.crud import titular as crud_titular
-from src.crud import visitante as crud_visitante
-from src.crud import entrada as crud_entrada
-from src.crud import sede as crud_sede
-from src.crud import atraccion as crud_atraccion
+"Esto es para la prueba del pull request ya que no me quiere subir a Github"
+import src.crud.UsuarioCrud as crud_usuario
+import src.crud.TitularCrud as crud_titular
+import src.crud.VisitanteCrud as crud_visitante
+import src.crud.EntradaCrud as crud_entrada
+import src.crud.SedeCrud as crud_sede
+import src.crud.AtraccionesCrud as crud_atraccion
 from src.crud.MicroEntidadesCrud import (
     crear_acuatica,
     obtener_todas_acuaticas,
@@ -36,7 +37,7 @@ from src.crud.MicroEntidadesCrud import (
     obtener_fisica_por_id,
     eliminar_fisica,
 )
-from src.database.config import crear_tablas
+from src.database.config import create_tables
 from src.Entities.Usuario import Usuario
 
 
@@ -466,6 +467,77 @@ def menu_acuaticas() -> None:
                 print("No se pudo eliminar. 🚫")
 
 
+def menu_electronicas() -> None:
+    while True:
+        print("\n--- Electrónicas ---")
+        print("1. Listar  2. Crear  3. Actualizar  4. Eliminar  0. Volver")
+        op = leer_texto("Opción: ")
+        if op == "0":
+            return
+        if op == "1":
+            for e in obtener_todas_electronicas():
+                print(
+                    f"  {e.id_electronica} | experiencia={e.experiencia} | equipamiento={e.equipamiento or '-'}"
+                )
+        elif op == "2":
+            id_a = leer_uuid("ID atracción base: ")
+            experiencia = leer_texto("Experiencia: ")
+            equipamiento = leer_texto("Equipamiento (opcional): ")
+            if id_a and experiencia:
+                crear_electronica(id_a, experiencia, equipamiento or None)
+                print("Electrónica creada.")
+        elif op == "3":
+            id_e = leer_uuid("ID electrónica a actualizar: ")
+            if not id_e:
+                print("ID inválido.")
+                continue
+            e = obtener_electronica_por_id(id_e)
+            if not e:
+                print("No existe.")
+                continue
+            experiencia = (
+                leer_texto(f"Nueva experiencia (actual: {e.experiencia}): ")
+                or e.experiencia
+            )
+            equipamiento = (
+                leer_texto(f"Nuevo equipamiento (actual: {e.equipamiento or '-'}): ")
+                or e.equipamiento
+            )
+            actualizar_electronica(
+                id_e, experiencia=experiencia, equipamiento=equipamiento
+            )
+            print("Actualizado.")
+        elif op == "4":
+            id_e = leer_uuid("ID electrónica a eliminar: ")
+            if id_e and eliminar_electronica(id_e):
+                print("Eliminado. 😁")
+            else:
+                print("No se pudo eliminar. 🚫")
+
+
+def menu_mecanicas() -> None:
+    while True:
+        print("\n- Mecánicas -")
+        print("1. Listar  2. Crear  3. Eliminar  0. Volver")
+        op = leer_texto("Opción: ")
+        if op == "0":
+            return
+        if op == "1":
+            for m in obtener_todas_mecanicas():
+                print(f"  {m.id_mecanica} | atraccion={m.id_atraccion}")
+        elif op == "2":
+            id_a = leer_uuid("ID atracción base: ")
+            if id_a:
+                crear_mecanica(id_a)
+                print("Mecánica creada.")
+        elif op == "3":
+            id_m = leer_uuid("ID mecánica a eliminar: ")
+            if id_m and eliminar_mecanica(id_m):
+                print("Eliminado. 🥳🥳")
+            else:
+                print("No se pudo eliminar. X")
+
+
 def menu_fisicas() -> None:
     while True:
         print("\n- Físicas -")
@@ -484,9 +556,9 @@ def menu_fisicas() -> None:
         elif op == "3":
             id_f = leer_uuid("ID física a eliminar: ")
             if id_f and eliminar_fisica(id_f):
-                print("Eliminado. 🥳🥳")
+                print("Eliminado. 😁")
             else:
-                print("No se pudo eliminar. ✖️")
+                print("No se pudo eliminar. 🚫")
 
 
 def menu_principal(usuario: Usuario) -> None:
@@ -525,7 +597,7 @@ def menu_principal(usuario: Usuario) -> None:
 
 
 def main() -> None:
-    crear_tablas()
+    create_tables()
     usuario = ingresar_o_crear_usuario()
     if not usuario:
         print("No se pudo iniciar sesión. Saliendo.")

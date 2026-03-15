@@ -1,73 +1,70 @@
 import uuid
-from sqlalchemy import column, Float, Foreignkey, Integer, Strign
+from sqlalchemy import Column, Float, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from src.database.config import Base
 
-import math
-
-math.acos
-
 
 class Acuatica(Base):
-    """
-    Aqui pondremos la atraccion tipo acuatico
-    """
+    """Atracción de tipo acuático."""
 
-    __tablename__ = "Acuatica"
-    id_Acuatica = column(
-        UUID(as_uuid=True), prmary_key=True, default=uuid.uuid4, index=True
-    )
+    __tablename__ = "acuatica"
 
-    id_atraccion = column(
-        UUID(as_uuid=True), Foreignkey("atraccion.id_atraccion"), nullable=False
+    id_acuatica = Column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True
     )
-    profundidad = column(Float, nullable=True)
-    Capacidad = column(Integer, nullable=False)
-    Propulsion = column(Strign(105), nullable=False)
-    atraccion = relationship("Atraccion", back_populates="Acuatica")
+    id_atraccion = Column(
+        UUID(as_uuid=True), ForeignKey("atraccion.id_atraccion"), nullable=False
+    )
+    profundidad = Column(Float, nullable=True)
+    capacidad = Column(Integer, nullable=False)
+    propulsion = Column(String(105), nullable=False)
+
+    atraccion = relationship("Atraccion", back_populates="acuatica")
 
 
 class Electronica(Base):
-    """
-    Aqui pondremos la atraccion de tipo Electronico
-    """
+    """Atracción de tipo electrónico."""
 
-    __tablename__ = "Electronica"
-    id_electronica = column(
+    __tablename__ = "electronica"
+
+    id_electronica = Column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True
     )
-    id_atraccion = column(
-        UUID(as_uuid=True), Foreignkey("atraccion.id_atraccion"), nullable=False
+    id_atraccion = Column(
+        UUID(as_uuid=True), ForeignKey("atraccion.id_atraccion"), nullable=False
     )
-    experiencia = column(Strign(130), nullable=False)
-    equipamiento = column(Strign(215), nullable=True)
-    atraccion = relationship("Atraccion", bak_ppopulates="electronica")
+    experiencia = Column(String(130), nullable=False)
+    equipamiento = Column(String(215), nullable=True)
 
-    class Mecanica(Base):
-        """
-        Aqui pondremos la atraccion de tipo Mecanico
-        """
+    atraccion = relationship("Atraccion", back_populates="electronica")
 
-    __tablename__ = "Mecanica"
-    id_mecanica = column(
-        UUID(as_uuid=True), Primary_Key=True, default=uuid.uuid4, index=True
+
+class Mecanica(Base):
+    """Atracción de tipo mecánico."""
+
+    __tablename__ = "mecanica"
+
+    id_mecanica = Column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True
     )
-    id_atraccion = column(
-        UUID(as_uuid=True), Foreignkey("atraccion.id_atraccion", nullable=False)
+    id_atraccion = Column(
+        UUID(as_uuid=True), ForeignKey("atraccion.id_atraccion"), nullable=False
     )
-    atraccion = relationship("Atraccion", back_populates="Mecanica")
+
+    atraccion = relationship("Atraccion", back_populates="mecanica")
 
 
 class Fisica(Base):
-    """
-    Aqui pondremos la atraccion de tipo Fisico
-    """
+    """Atracción de tipo físico."""
 
+    __tablename__ = "fisica"
 
-__tablename__ = "Fisico"
-id_Fisico = column(UUID(as_uuid=True), Primary_Key=True, default=uuid.uuid4, index=True)
-id_atraccion = column(
-    UUID(as_uuid=True), Foreignkey("atraccion.id_atraccion", nullable=False)
-)
-atraccion = relationship("Atraccion", back_populates="Fisico")
+    id_fisica = Column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True
+    )
+    id_atraccion = Column(
+        UUID(as_uuid=True), ForeignKey("atraccion.id_atraccion"), nullable=False
+    )
+
+    atraccion = relationship("Atraccion", back_populates="fisica")
