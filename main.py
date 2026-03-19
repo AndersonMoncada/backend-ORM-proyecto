@@ -275,15 +275,14 @@ def menu_entradas(usuario_id: UUID) -> None:
             codigo = leer_texto("Código de entrada: ")
             precio = leer_float("Precio: ")
             fecha_str = leer_texto("Fecha (YYYY-MM-DD): ")
-            reingreso_str = leer_texto(f"Nuevo reingreso (actual: {e.reingreso}): ")
-            reingreso = reingreso_str.lower() == "si" if reingreso_str else e.reingreso
-            crud_entrada.actualizar(id_e, precio=precio, reingreso=reingreso)
+            reingreso_str = leer_texto("Reingreso (si/no): ")
+            reingreso = reingreso_str.lower() == "si"
             id_t = leer_uuid("ID titular: ")
             if codigo and id_t:
                 try:
                     fecha = datetime.strptime(fecha_str, "%Y-%m-%d")
                     crud_entrada.crear(
-                        codigo, precio, fecha, id_t, usuario_id, reingreso or None
+                        codigo, precio, fecha, id_t, usuario_id, reingreso
                     )
                     print("Entrada creada.")
                 except Exception as e:
@@ -298,13 +297,9 @@ def menu_entradas(usuario_id: UUID) -> None:
                 print("No existe esa entrada.")
                 continue
             precio = leer_float(f"Nuevo precio (actual: {e.precio}): ") or e.precio
-            reingreso = (
-                leer_texto(f"Nuevo reingreso (actual: {e.reingreso or '-'}): ")
-                or e.reingreso
-            )
-            crud_entrada.actualizar(
-                id_e, usuario_id, precio=precio, reingreso=reingreso
-            )
+            reingreso_str = leer_texto(f"Nuevo reingreso (actual: {e.reingreso}): ")
+            reingreso = reingreso_str.lower() == "si" if reingreso_str else e.reingreso
+            crud_entrada.actualizar(id_e, precio=precio, reingreso=reingreso)
             print("Actualizado.")
         elif op == "5":
             id_e = leer_uuid("ID entrada a eliminar: ")
