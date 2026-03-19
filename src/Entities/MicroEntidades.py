@@ -1,73 +1,96 @@
 import uuid
-from sqlalchemy import column, Float, Foreignkey, Integer, Strign
+from sqlalchemy import Column, Float, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from src.database.config import Base
 
-import math
-
-math.acos
-
 
 class Acuatica(Base):
-    """
-    Aqui pondremos la atraccion tipo acuatico
-    """
+    """Atracción de tipo acuático. Extiende la atracción base con datos del agua."""
 
-    __tablename__ = "Acuatica"
-    id_Acuatica = column(
-        UUID(as_uuid=True), prmary_key=True, default=uuid.uuid4, index=True
-    )
+    __tablename__ = "acuatica"
 
-    id_atraccion = column(
-        UUID(as_uuid=True), Foreignkey("atraccion.id_atraccion"), nullable=False
+    id_acuatica = Column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True
     )
-    profundidad = column(Float, nullable=True)
-    Capacidad = column(Integer, nullable=False)
-    Propulsion = column(Strign(105), nullable=False)
-    atraccion = relationship("Atraccion", back_populates="Acuatica")
+    """Identificador único de la atracción acuática."""
+
+    id_atraccion = Column(
+        UUID(as_uuid=True), ForeignKey("atraccion.id_atraccion"), nullable=False
+    )
+    """ID de la atracción base a la que pertenece."""
+
+    profundidad = Column(Float, nullable=True)
+    """Profundidad del agua en metros."""
+
+    capacidad = Column(Integer, nullable=False)
+    """Número máximo de personas simultáneas."""
+
+    propulsion = Column(String(105), nullable=False)
+    """Tipo de propulsión: corriente natural, motor eléctrico, etc."""
+
+    atraccion = relationship("Atraccion", back_populates="acuatica")
+    """Atracción base asociada."""
 
 
 class Electronica(Base):
-    """
-    Aqui pondremos la atraccion de tipo Electronico
-    """
+    """Atracción de tipo electrónico. Extiende la atracción base con datos del juego."""
 
-    __tablename__ = "Electronica"
-    id_electronica = column(
+    __tablename__ = "electronica"
+
+    id_electronica = Column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True
     )
-    id_atraccion = column(
-        UUID(as_uuid=True), Foreignkey("atraccion.id_atraccion"), nullable=False
-    )
-    experiencia = column(Strign(130), nullable=False)
-    equipamiento = column(Strign(215), nullable=True)
-    atraccion = relationship("Atraccion", bak_ppopulates="electronica")
+    """Identificador único de la atracción electrónica."""
 
-    class Mecanica(Base):
-        """
-        Aqui pondremos la atraccion de tipo Mecanico
-        """
+    id_atraccion = Column(
+        UUID(as_uuid=True), ForeignKey("atraccion.id_atraccion"), nullable=False
+    )
+    """ID de la atracción base a la que pertenece."""
 
-    __tablename__ = "Mecanica"
-    id_mecanica = column(
-        UUID(as_uuid=True), Primary_Key=True, default=uuid.uuid4, index=True
+    experiencia = Column(String(130), nullable=False)
+    """Tipo de experiencia: VR, Arcade, Shooter FPS, etc."""
+
+    equipamiento = Column(String(215), nullable=True)
+    """Equipamiento necesario para la atracción, opcional."""
+
+    atraccion = relationship("Atraccion", back_populates="electronica")
+    """Atracción base asociada."""
+
+
+class Mecanica(Base):
+    """Atracción de tipo mecánico. Extiende la atracción base."""
+
+    __tablename__ = "mecanica"
+
+    id_mecanica = Column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True
     )
-    id_atraccion = column(
-        UUID(as_uuid=True), Foreignkey("atraccion.id_atraccion", nullable=False)
+    """Identificador único de la atracción mecánica."""
+
+    id_atraccion = Column(
+        UUID(as_uuid=True), ForeignKey("atraccion.id_atraccion"), nullable=False
     )
-    atraccion = relationship("Atraccion", back_populates="Mecanica")
+    """ID de la atracción base a la que pertenece."""
+
+    atraccion = relationship("Atraccion", back_populates="mecanica")
+    """Atracción base asociada."""
 
 
 class Fisica(Base):
-    """
-    Aqui pondremos la atraccion de tipo Fisico
-    """
+    """Atracción de tipo físico. Extiende la atracción base."""
 
+    __tablename__ = "fisica"
 
-__tablename__ = "Fisico"
-id_Fisico = column(UUID(as_uuid=True), Primary_Key=True, default=uuid.uuid4, index=True)
-id_atraccion = column(
-    UUID(as_uuid=True), Foreignkey("atraccion.id_atraccion", nullable=False)
-)
-atraccion = relationship("Atraccion", back_populates="Fisico")
+    id_fisica = Column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True
+    )
+    """Identificador único de la atracción física."""
+
+    id_atraccion = Column(
+        UUID(as_uuid=True), ForeignKey("atraccion.id_atraccion"), nullable=False
+    )
+    """ID de la atracción base a la que pertenece."""
+
+    atraccion = relationship("Atraccion", back_populates="fisica")
+    """Atracción base asociada."""
