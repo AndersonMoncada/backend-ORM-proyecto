@@ -122,7 +122,7 @@ Cada funcionalidad se desarrolla en una rama `feat`, se integra a `dev` mediante
 
 ## Video demostrativo
 
-🎥 URL del video: _proximamente_
+[🎥 URL del video](https://drive.google.com/file/d/1PtMPPrprwsYymXXANvvDEfEM6OVbRduf/view?usp=sharing)
 
 ---
 
