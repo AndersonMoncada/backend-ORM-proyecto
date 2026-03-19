@@ -271,45 +271,40 @@ def menu_entradas(usuario_id: UUID) -> None:
             if id_t:
                 for e in crud_entrada.obtener_por_titular(id_t):
                     print(f"  {e.id_entrada} | {e.codigo} | precio={e.precio}")
-
         elif op == "3":
             codigo = leer_texto("Código de entrada: ")
             precio = leer_float("Precio: ")
-            reingreso = leer_texto("Reingreso (si/no): ")
+            fecha_str = leer_texto("Fecha (YYYY-MM-DD): ")
+            reingreso_str = leer_texto(f"Nuevo reingreso (actual: {e.reingreso}): ")
+            reingreso = reingreso_str.lower() == "si" if reingreso_str else e.reingreso
+            crud_entrada.actualizar(id_e, precio=precio, reingreso=reingreso)
             id_t = leer_uuid("ID titular: ")
-
             if codigo and id_t:
                 try:
-                    reingreso_bool = True if reingreso.lower() == "si" else False
+                    fecha = datetime.strptime(fecha_str, "%Y-%m-%d")
                     crud_entrada.crear(
-                        codigo, precio, reingreso_bool, id_t, usuario_id
+                        codigo, precio, fecha, id_t, usuario_id, reingreso or None
                     )
                     print("Entrada creada.")
                 except Exception as e:
                     print("Error:", e)
-
         elif op == "4":
             id_e = leer_uuid("ID entrada a actualizar: ")
             if not id_e:
                 print("ID inválido.")
                 continue
-
             e = crud_entrada.obtener_por_id(id_e)
             if not e:
                 print("No existe esa entrada.")
                 continue
             precio = leer_float(f"Nuevo precio (actual: {e.precio}): ") or e.precio
-
-            reingreso_input = leer_texto(f"Nuevo reingreso (actual: {e.reingreso}): ")
-            if reingreso_input:
-                reingreso = True if reingreso_input.lower() == "si" else False
-            else:
-                reingreso = e.reingreso
-
-            crud_entrada.actualizar(
-                id_e, precio=precio, reingreso=reingreso
+            reingreso = (
+                leer_texto(f"Nuevo reingreso (actual: {e.reingreso or '-'}): ")
+                or e.reingreso
             )
-
+            crud_entrada.actualizar(
+                id_e, usuario_id, precio=precio, reingreso=reingreso
+            )
             print("Actualizado.")
         elif op == "5":
             id_e = leer_uuid("ID entrada a eliminar: ")
