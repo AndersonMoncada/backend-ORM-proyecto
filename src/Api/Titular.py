@@ -72,15 +72,16 @@ def actualizar_titular(
     t = crud_titular.actualizar(db, id_titular, id_edita, **data)
     if not t:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Titular no encontrado"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Titular no encontrado X"
         )
     return t
 
 
-@router.delete("/{id_titular}", status_code=status.HTTP_204_NO_CONTENT)
-def eliminar_titular(db: DbSession, id_titular: UUID) -> None:
+@router.delete("/{id_titular}")
+def eliminar_titular(id_titular: UUID, db: DbSession):
     """Elimina un titular por su ID."""
     if not crud_titular.eliminar(db, id_titular):
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Titular no encontrado"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Titular no encontrado X"
         )
+    return {"Message": "Titular eliminado correctamente!! :D"}
