@@ -20,6 +20,7 @@ class UsuarioUpdate(BaseModel):
     contrasena: Optional[str] = None
     rol: Optional[str] = None
     activo: Optional[bool] = None
+    id_usuario_edita: UUID
 
 
 class UsuarioRead(BaseModel):
@@ -55,30 +56,29 @@ def obtener_usuario(db: DbSession, id_usuario: UUID) -> UsuarioRead:
 @router.post("", response_model=UsuarioRead, status_code=status.HTTP_201_CREATED)
 def crear_usuario(db: DbSession, body: UsuarioCreate) -> UsuarioRead:
     """Crea un nuevo usuario."""
-    try:
-        return crud_usuario.crear(db, body.nombre_usuario, body.contrasena, body.rol)
-    except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    return crud_usuario.crear(db, body.nombre_usuario, body.contrasena, body.rol)
 
 
 @router.put("/{id_usuario}", response_model=UsuarioRead)
 def actualizar_usuario(
     db: DbSession, id_usuario: UUID, body: UsuarioUpdate
 ) -> UsuarioRead:
-    """Actualiza los datos de un usuario."""
-    data = body.model_dump(exclude_unset=True)
-    u = crud_usuario.actualizar(db, id_usuario, **data)
+
+    data = body.model_dump(exclude_unset=True, exclude={"id_usuario_edita"})
+
+    u = crud_usuario.actualizar(db, id_usuario, body.id_usuario_edita, **data)
+
     if not u:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado"
         )
+
     return u
 
 
-@router.delete("/{id_usuario}", status_code=status.HTTP_204_NO_CONTENT)
-def eliminar_usuario(db: DbSession, id_usuario: UUID) -> None:
-    """Elimina un usuario por ID"""
+@router.delete("/{id_usuario}")
+def eliminar_usuario(db: DbSession, id_usuario: UUID):
     if not crud_usuario.eliminar(db, id_usuario):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Usuaro no encontrado"
-        )
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    return {"msg": "Usuario eliminado correctamente"}

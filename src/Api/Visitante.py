@@ -13,7 +13,7 @@ class VisitanteCreate(BaseModel):
     nombre_visitante: str
     edad: int
     estatura: float
-    id_titualr: UUID
+    id_titular: UUID
     id_usuario_creacion: UUID
 
 
@@ -30,7 +30,7 @@ class VisitanteRead(BaseModel):
     nombre_visitante: str
     edad: int
     estatura: float
-    id_titualr: UUID
+    id_titular: UUID
     fecha_creacion: Optional[datetime] = None
     fecha_edicion: Optional[datetime] = None
     id_usuario_creacion: UUID
@@ -88,10 +88,9 @@ def actualizar_visitante(
     return v
 
 
-@router.delete("/{id_visitante}", status_code=status.HTTP_204_NO_CONTENT)
-def eliminar_visitante(db: DbSession, id_visitante: UUID) -> None:
-    """Elimina un visitante por su ID."""
-    if not crud_visitante.eliminar(db, id_visitante):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Visitante no encontrado"
-        )
+@router.delete("/{id_usuario}")
+def eliminar_usuario(db: DbSession, id_usuario: UUID):
+    if not crud_visitante.eliminar(db, id_usuario):
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    return {"msg": "Usuario eliminado correctamente"}
