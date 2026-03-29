@@ -4,6 +4,7 @@ from fastapi import FastAPI
 
 from src.database.config import create_tables
 
+
 from . import Usuario, Titular, Visitante
 
 from src.Api.MicroEntidades import (
@@ -12,6 +13,7 @@ from src.Api.MicroEntidades import (
     router_mecanica,
     router_fisica,
 )
+
 
 
 @asynccontextmanager
@@ -24,6 +26,7 @@ async def lifespan(_app: FastAPI):
 
 
 app = FastAPI(title="API", version="1.0.0", lifespan=lifespan)
+
 
 app.include_router(Usuario.router)
 app.include_router(Titular.router)
@@ -40,9 +43,11 @@ app.include_router(Accede.router)
 
 @app.get("/health")
 def health() -> dict[str, str]:
+
     return {"status": "ok"}
 
 
 @app.get("/")
 def root():
     return {"msg": "API funcionando 🚀"}
+
