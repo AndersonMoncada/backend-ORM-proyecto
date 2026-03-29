@@ -32,6 +32,10 @@ app.include_router(router_acuatica)
 app.include_router(router_electronica)
 app.include_router(router_mecanica)
 app.include_router(router_fisica)
+app.include_router(Sede.router)
+app.include_router(Atraccion.router)
+app.include_router(Entrada.router)
+app.include_router(Accede.router)
 
 
 @app.get("/health")
