@@ -3,7 +3,15 @@ from fastapi import FastAPI
 from src.database.config import create_tables
 
 
-from . import Usuario, Titular, Visitante
+from . import (
+    Usuario,
+    Titular,
+    Visitante,
+    Accede,
+    Sede,
+    Atraccion,
+    Entrada,
+)
 
 
 from src.Api.MicroEntidades import (
@@ -28,7 +36,10 @@ app = FastAPI(title="API", version="1.0.0", lifespan=lifespan)
 app.include_router(Usuario.router)
 app.include_router(Titular.router)
 app.include_router(Visitante.router)
-
+app.include_router(Accede.router)
+app.include_router(Sede.router)
+app.include_router(Atraccion.router)
+app.include_router(Entrada.router)
 
 app.include_router(router_acuatica)
 app.include_router(router_electronica)
