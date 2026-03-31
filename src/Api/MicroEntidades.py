@@ -139,10 +139,12 @@ def actualizar_electronica_endpoint(
     return e
 
 
-@router_electronica.delete("/{id_electronica}", status_code=204)
+@router_electronica.delete("/{id_electronica}")
 def eliminar_electronica_endpoint(db: DbSession, id_electronica: UUID):
     if not eliminar_electronica(db, id_electronica):
         raise HTTPException(status_code=404, detail="Electrónica no encontrada")
+
+    return {"msg": "Electrónica eliminada correctamente"}
 
 
 router_mecanica = APIRouter(prefix="/mecanicas", tags=["Mecánicas"])
@@ -176,10 +178,12 @@ def crear_mecanica_endpoint(db: DbSession, body: MecanicaCreate):
     return crear_mecanica(db, body.id_atraccion)
 
 
-@router_mecanica.delete("/{id_mecanica}", status_code=204)
+@router_mecanica.delete("/{id_mecanica}")
 def eliminar_mecanica_endpoint(db: DbSession, id_mecanica: UUID):
     if not eliminar_mecanica(db, id_mecanica):
         raise HTTPException(status_code=404, detail="Mecánica no encontrada")
+
+    return {"msg": "Mecánica eliminada correctamente"}
 
 
 router_fisica = APIRouter(prefix="/fisicas", tags=["Físicas"])
@@ -213,7 +217,9 @@ def crear_fisica_endpoint(db: DbSession, body: FisicaCreate):
     return crear_fisica(db, body.id_atraccion)
 
 
-@router_fisica.delete("/{id_fisica}", status_code=204)
+@router_fisica.delete("/{id_fisica}")
 def eliminar_fisica_endpoint(db: DbSession, id_fisica: UUID):
     if not eliminar_fisica(db, id_fisica):
         raise HTTPException(status_code=404, detail="Física no encontrada")
+
+    return {"msg": "Física eliminada correctamente"}
