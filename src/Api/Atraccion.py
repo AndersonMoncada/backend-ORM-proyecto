@@ -39,8 +39,8 @@ def obtener_por_id(id_atraccion: UUID) -> AtraccionRead:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Atraccion no encontrada")
     return e
 
-@router.get("/{id_sede}", response_model=List[AtraccionRead])
-def obtener_por_sede(id_sede: UUID) -> AtraccionRead:
+@router.get("/sede/{id_sede}", response_model=List[AtraccionRead])
+def obtener_por_sede(id_sede: UUID) -> List[AtraccionRead]:
     e = crud_atraccion.obtener_por_sede(id_sede)
     if not e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sede no encontrada")
