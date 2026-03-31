@@ -7,10 +7,10 @@ import sys
 from datetime import datetime
 from typing import Optional
 from uuid import UUID
+from src.database.config import SessionLocal
 
 sys.path.insert(0, ".")
 
-"Esto es para la prueba del pull request ya que no me quiere subir a Github"
 import src.crud.UsuarioCrud as crud_usuario
 import src.crud.TitularCrud as crud_titular
 import src.crud.VisitanteCrud as crud_visitante
@@ -69,8 +69,8 @@ def leer_uuid(mensaje: str) -> Optional[UUID]:
         return None
 
 
-def ingresar_o_crear_usuario() -> Optional[Usuario]:
-    if not crud_usuario.hay_usuarios():
+def ingresar_o_crear_usuario(db) -> Optional[Usuario]:
+    if not crud_usuario.hay_usuarios(db):
         print("\nNo hay usuarios en el sistema. Crea el primero :).")
         nombre = leer_texto("Nombre de usuario: ")
         contra = leer_texto("Contraseña: ")
@@ -79,7 +79,7 @@ def ingresar_o_crear_usuario() -> Optional[Usuario]:
             print("Nombre y contraseña son obligatorios.")
             return None
         try:
-            crud_usuario.crear(nombre, contra, rol)
+            crud_usuario.crear(db, nombre, contra, rol)
             print(f"Usuario '{nombre}' creado. Inicia sesión.\n")
         except Exception as e:
             print("Error al crear usuario:", e)
@@ -92,14 +92,14 @@ def ingresar_o_crear_usuario() -> Optional[Usuario]:
         if not nombre or not contra:
             print("Usuario y contraseña obligatorios.\n")
             continue
-        usuario = crud_usuario.login(nombre, contra)
+        usuario = crud_usuario.login(db, nombre, contra)
         if usuario:
             print(f"\nBienvenido, {usuario.nombre_usuario} ({usuario.rol}).\n")
             return usuario
         print("Usuario o contraseña incorrectos.\n")
 
 
-def menu_usuarios(usuario_id: UUID) -> None:
+def menu_usuarios(usuario_id: UUID, db) -> None:
     while True:
         print("\n- Usuarios -")
         print("1. Lista  2. Crear  3. Actualizar  4. Eliminar  0. Volver")
@@ -107,7 +107,7 @@ def menu_usuarios(usuario_id: UUID) -> None:
         if op == "0":
             return
         if op == "1":
-            for u in crud_usuario.obtener_todos():
+            for u in crud_usuario.obtener_todos(db):
                 print(
                     f"  {u.id_usuario} | {u.nombre_usuario} | {u.rol} | activo={u.activo}"
                 )
@@ -117,7 +117,7 @@ def menu_usuarios(usuario_id: UUID) -> None:
             rol = leer_texto("Rol (admin/usuario): ") or "usuario"
             if nombre and contra:
                 try:
-                    crud_usuario.crear(nombre, contra, rol)
+                    crud_usuario.crear(db, nombre, contra, rol)
                     print("Usuario creado.")
                 except Exception as e:
                     print("Error:", e)
@@ -126,7 +126,7 @@ def menu_usuarios(usuario_id: UUID) -> None:
             if not id_u:
                 print("ID inválido.")
                 continue
-            u = crud_usuario.obtener_por_id(id_u)
+            u = crud_usuario.obtener_por_id(db, id_u)
             if not u:
                 print("No existe ese usuario.")
                 continue
@@ -135,17 +135,19 @@ def menu_usuarios(usuario_id: UUID) -> None:
                 or u.nombre_usuario
             )
             rol = leer_texto(f"Nuevo rol (actual: {u.rol}): ") or u.rol
-            crud_usuario.actualizar(id_u, usuario_id, nombre_usuario=nombre, rol=rol)
+            crud_usuario.actualizar(
+                db, id_u, usuario_id, nombre_usuario=nombre, rol=rol
+            )
             print("Actualizado.")
         elif op == "4":
             id_u = leer_uuid("ID usuario a eliminar: ")
-            if id_u and crud_usuario.eliminar(id_u):
+            if id_u and crud_usuario.eliminar(db, id_u):
                 print("Eliminado correctamente 🥳🥳.")
             else:
                 print("No se pudo eliminar ✖️.")
 
 
-def menu_titulares(usuario_id: UUID) -> None:
+def menu_titulares(usuario_id: UUID, db) -> None:
     while True:
         print("\n- Titulares -")
         print("1. Lista  2. Crear  3. Actualizar  4. Eliminar  0. Volver")
@@ -153,7 +155,7 @@ def menu_titulares(usuario_id: UUID) -> None:
         if op == "0":
             return
         if op == "1":
-            for t in crud_titular.obtener_todos():
+            for t in crud_titular.obtener_todos(db):
                 print(
                     f"  {t.id_titular} | {t.nombre} | {t.cedula} | {t.telefono or '-'}"
                 )
@@ -163,7 +165,7 @@ def menu_titulares(usuario_id: UUID) -> None:
             telefono = leer_texto("Teléfono (opcional): ")
             if nombre and cedula:
                 try:
-                    crud_titular.crear(nombre, cedula, usuario_id, telefono or None)
+                    crud_titular.crear(db, nombre, cedula, usuario_id, telefono or None)
                     print("Titular creado.")
                 except Exception as e:
                     print("Error:", e)
@@ -172,7 +174,7 @@ def menu_titulares(usuario_id: UUID) -> None:
             if not id_t:
                 print("ID inválido X.")
                 continue
-            t = crud_titular.obtener_por_id(id_t)
+            t = crud_titular.obtener_por_id(db, id_t)
             if not t:
                 print("No existe ese titular.")
                 continue
@@ -181,17 +183,19 @@ def menu_titulares(usuario_id: UUID) -> None:
                 leer_texto(f"Nuevo teléfono (actual: {t.telefono or '-'}): ")
                 or t.telefono
             )
-            crud_titular.actualizar(id_t, usuario_id, nombre=nombre, telefono=telefono)
+            crud_titular.actualizar(
+                db, id_t, usuario_id, nombre=nombre, telefono=telefono
+            )
             print("Actualizado.")
         elif op == "4":
             id_t = leer_uuid("ID titular a eliminar: ")
-            if id_t and crud_titular.eliminar(id_t):
+            if id_t and crud_titular.eliminar(db, id_t):
                 print("Eliminado. 🥳🥳")
             else:
                 print("No se pudo eliminar. ✖️")
 
 
-def menu_visitantes(usuario_id: UUID) -> None:
+def menu_visitantes(usuario_id: UUID, db) -> None:
     while True:
         print("\n- Visitantes -")
         print(
@@ -201,14 +205,14 @@ def menu_visitantes(usuario_id: UUID) -> None:
         if op == "0":
             return
         if op == "1":
-            for v in crud_visitante.obtener_todos():
+            for v in crud_visitante.obtener_todos(db):
                 print(
                     f"  {v.id_visitante} | {v.nombre_visitante} | edad={v.edad} | estatura={v.estatura}"
                 )
         elif op == "2":
             id_t = leer_uuid("ID titular: ")
             if id_t:
-                for v in crud_visitante.obtener_por_titular(id_t):
+                for v in crud_visitante.obtener_por_titular(db, id_t):
                     print(
                         f"  {v.id_visitante} | {v.nombre_visitante} | edad={v.edad} | estatura={v.estatura}"
                     )
@@ -219,7 +223,7 @@ def menu_visitantes(usuario_id: UUID) -> None:
             id_t = leer_uuid("ID titular: ")
             if nombre and id_t:
                 try:
-                    crud_visitante.crear(nombre, edad, estatura, id_t, usuario_id)
+                    crud_visitante.crear(db, nombre, edad, estatura, id_t, usuario_id)
                     print("Visitante creado.")
                 except Exception as e:
                     print("Error:", e)
@@ -228,7 +232,7 @@ def menu_visitantes(usuario_id: UUID) -> None:
             if not id_v:
                 print("ID inválido.")
                 continue
-            v = crud_visitante.obtener_por_id(id_v)
+            v = crud_visitante.obtener_por_id(db, id_v)
             if not v:
                 print("No existe ese visitante.")
                 continue
@@ -241,18 +245,23 @@ def menu_visitantes(usuario_id: UUID) -> None:
                 leer_float(f"Nueva estatura (actual: {v.estatura}): ") or v.estatura
             )
             crud_visitante.actualizar(
-                id_v, usuario_id, nombre_visitante=nombre, edad=edad, estatura=estatura
+                db,
+                id_v,
+                usuario_id,
+                nombre_visitante=nombre,
+                edad=edad,
+                estatura=estatura,
             )
             print("Actualizado.")
         elif op == "5":
             id_v = leer_uuid("ID visitante a eliminar: ")
-            if id_v and crud_visitante.eliminar(id_v):
+            if id_v and crud_visitante.eliminar(db, id_v):
                 print("Eliminado. 🥳🥳")
             else:
                 print("No se pudo eliminar. ✖️")
 
 
-def menu_entradas(usuario_id: UUID) -> None:
+def menu_entradas(usuario_id: UUID, db) -> None:
     while True:
         print("\n- Entradas -")
         print(
@@ -262,14 +271,14 @@ def menu_entradas(usuario_id: UUID) -> None:
         if op == "0":
             return
         if op == "1":
-            for e in crud_entrada.obtener_todos():
+            for e in crud_entrada.obtener_todos(db):
                 print(
                     f"  {e.id_entrada} | {e.codigo} | precio={e.precio} | fecha={e.fecha}"
                 )
         elif op == "2":
             id_t = leer_uuid("ID titular: ")
             if id_t:
-                for e in crud_entrada.obtener_por_titular(id_t):
+                for e in crud_entrada.obtener_por_titular(db, id_t):
                     print(f"  {e.id_entrada} | {e.codigo} | precio={e.precio}")
         elif op == "3":
             codigo = leer_texto("Código de entrada: ")
@@ -282,7 +291,7 @@ def menu_entradas(usuario_id: UUID) -> None:
                 try:
                     fecha = datetime.strptime(fecha_str, "%Y-%m-%d")
                     crud_entrada.crear(
-                        codigo, precio, fecha, id_t, usuario_id, reingreso
+                        db, codigo, precio, fecha, id_t, usuario_id, reingreso
                     )
                     print("Entrada creada.")
                 except Exception as e:
@@ -292,24 +301,24 @@ def menu_entradas(usuario_id: UUID) -> None:
             if not id_e:
                 print("ID inválido.")
                 continue
-            e = crud_entrada.obtener_por_id(id_e)
+            e = crud_entrada.obtener_por_id(db, id_e)
             if not e:
                 print("No existe esa entrada.")
                 continue
             precio = leer_float(f"Nuevo precio (actual: {e.precio}): ") or e.precio
             reingreso_str = leer_texto(f"Nuevo reingreso (actual: {e.reingreso}): ")
             reingreso = reingreso_str.lower() == "si" if reingreso_str else e.reingreso
-            crud_entrada.actualizar(id_e, precio=precio, reingreso=reingreso)
+            crud_entrada.actualizar(db, id_e, precio=precio, reingreso=reingreso)
             print("Actualizado.")
         elif op == "5":
             id_e = leer_uuid("ID entrada a eliminar: ")
-            if id_e and crud_entrada.eliminar(id_e):
+            if id_e and crud_entrada.eliminar(db, id_e):
                 print("Eliminado. 🥳🥳")
             else:
                 print("No se pudo eliminar. ✖️")
 
 
-def menu_sedes(usuario_id: UUID) -> None:
+def menu_sedes(usuario_id: UUID, db) -> None:
     while True:
         print("\n- Sedes -")
         print("1. Listar  2. Crear  3. Actualizar  4. Eliminar  0. Volver")
@@ -317,20 +326,20 @@ def menu_sedes(usuario_id: UUID) -> None:
         if op == "0":
             return
         if op == "1":
-            for s in crud_sede.obtener_todos():
+            for s in crud_sede.obtener_todos(db):
                 print(f"  {s.id_sede} | {s.nombre} | {s.ubicacion}")
         elif op == "2":
             nombre = leer_texto("Nombre sede: ")
             ubicacion = leer_texto("Ubicación: ")
             if nombre and ubicacion:
-                crud_sede.crear(nombre, ubicacion)
+                crud_sede.crear(db, nombre, ubicacion)
                 print("Sede creada.")
         elif op == "3":
             id_s = leer_uuid("ID sede a actualizar: ")
             if not id_s:
                 print("ID inválido.")
                 continue
-            s = crud_sede.obtener_por_id(id_s)
+            s = crud_sede.obtener_por_id(db, id_s)
             if not s:
                 print("No existe esa sede.")
                 continue
@@ -338,17 +347,17 @@ def menu_sedes(usuario_id: UUID) -> None:
             ubicacion = (
                 leer_texto(f"Nueva ubicación (actual: {s.ubicacion}): ") or s.ubicacion
             )
-            crud_sede.actualizar(id_s, nombre=nombre, ubicacion=ubicacion)
+            crud_sede.actualizar(db, id_s, nombre=nombre, ubicacion=ubicacion)
             print("Actualizado.")
         elif op == "4":
             id_s = leer_uuid("ID sede a eliminar: ")
-            if id_s and crud_sede.eliminar(id_s):
+            if id_s and crud_sede.eliminar(db, id_s):
                 print("Eliminado. 🥳🥳")
             else:
                 print("No se pudo eliminar. ✖️")
 
 
-def menu_atracciones(usuario_id: UUID) -> None:
+def menu_atracciones(usuario_id: UUID, db) -> None:
     while True:
         print("\n- Atracciones -")
         print("1. Listar  2. Crear  3. Actualizar  4. Eliminar  0. Volver")
@@ -356,7 +365,7 @@ def menu_atracciones(usuario_id: UUID) -> None:
         if op == "0":
             return
         if op == "1":
-            for a in crud_atraccion.obtener_todos():
+            for a in crud_atraccion.obtener_todos(db):
                 print(
                     f"  {a.id_atraccion} | {a.nombre} | edad_min={a.edad_minima} | estatura_min={a.estatura_minima} | sede={a.id_sede}"
                 )
@@ -366,14 +375,14 @@ def menu_atracciones(usuario_id: UUID) -> None:
             estatura_minima = leer_float("Estatura mínima (metros): ")
             id_s = leer_uuid("ID sede: ")
             if nombre and id_s:
-                crud_atraccion.crear(nombre, edad_minima, estatura_minima, id_s)
+                crud_atraccion.crear(db, nombre, edad_minima, estatura_minima, id_s)
                 print("Atracción creada.")
         elif op == "3":
             id_a = leer_uuid("ID atracción a actualizar: ")
             if not id_a:
                 print("ID inválido.")
                 continue
-            a = crud_atraccion.obtener_por_id(id_a)
+            a = crud_atraccion.obtener_por_id(db, id_a)
             if not a:
                 print("No existe esa atracción.")
                 continue
@@ -387,6 +396,7 @@ def menu_atracciones(usuario_id: UUID) -> None:
                 or a.estatura_minima
             )
             crud_atraccion.actualizar(
+                db,
                 id_a,
                 nombre=nombre,
                 edad_minima=edad_minima,
@@ -395,13 +405,13 @@ def menu_atracciones(usuario_id: UUID) -> None:
             print("Actualizado.")
         elif op == "4":
             id_a = leer_uuid("ID atracción a eliminar: ")
-            if id_a and crud_atraccion.eliminar(id_a):
+            if id_a and crud_atraccion.eliminar(db, id_a):
                 print("Eliminado. 🥳🥳")
             else:
                 print("No se pudo eliminar. ✖️")
 
 
-def menu_microentidades(usuario_id: UUID) -> None:
+def menu_microentidades(usuario_id: UUID, db) -> None:
     while True:
         print("\n--- Subentidades ---")
         print("1. Acuáticas  2. Electrónicas  3. Mecánicas  4. Físicas  0. Volver")
@@ -409,16 +419,16 @@ def menu_microentidades(usuario_id: UUID) -> None:
         if op == "0":
             return
         elif op == "1":
-            menu_acuaticas()
+            menu_acuaticas(db)
         elif op == "2":
-            menu_electronicas()
+            menu_electronicas(db)
         elif op == "3":
-            menu_mecanicas()
+            menu_mecanicas(db)
         elif op == "4":
-            menu_fisicas()
+            menu_fisicas(db)
 
 
-def menu_acuaticas() -> None:
+def menu_acuaticas(db) -> None:
     while True:
         print("\n- Acuáticas -")
         print("1. Listar  2. Crear  3. Actualizar  4. Eliminar  0. Volver")
@@ -426,7 +436,7 @@ def menu_acuaticas() -> None:
         if op == "0":
             return
         if op == "1":
-            for a in obtener_todas_acuaticas():
+            for a in obtener_todas_acuaticas(db):
                 print(
                     f"  {a.id_acuatica} | profundidad={a.profundidad} | capacidad={a.capacidad} | propulsion={a.propulsion}"
                 )
@@ -464,7 +474,7 @@ def menu_acuaticas() -> None:
                 print("No se pudo eliminar. 🚫")
 
 
-def menu_electronicas() -> None:
+def menu_electronicas(db) -> None:
     while True:
         print("\n--- Electrónicas ---")
         print("1. Listar  2. Crear  3. Actualizar  4. Eliminar  0. Volver")
@@ -472,7 +482,7 @@ def menu_electronicas() -> None:
         if op == "0":
             return
         if op == "1":
-            for e in obtener_todas_electronicas():
+            for e in obtener_todas_electronicas(db):
                 print(
                     f"  {e.id_electronica} | experiencia={e.experiencia} | equipamiento={e.equipamiento or '-'}"
                 )
@@ -512,7 +522,7 @@ def menu_electronicas() -> None:
                 print("No se pudo eliminar. 🚫")
 
 
-def menu_mecanicas() -> None:
+def menu_mecanicas(db) -> None:
     while True:
         print("\n- Mecánicas -")
         print("1. Listar  2. Crear  3. Eliminar  0. Volver")
@@ -520,7 +530,7 @@ def menu_mecanicas() -> None:
         if op == "0":
             return
         if op == "1":
-            for m in obtener_todas_mecanicas():
+            for m in obtener_todas_mecanicas(db):
                 print(f"  {m.id_mecanica} | atraccion={m.id_atraccion}")
         elif op == "2":
             id_a = leer_uuid("ID atracción base: ")
@@ -535,7 +545,7 @@ def menu_mecanicas() -> None:
                 print("No se pudo eliminar. X")
 
 
-def menu_fisicas() -> None:
+def menu_fisicas(db) -> None:
     while True:
         print("\n- Físicas -")
         print("1. Listar  2. Crear  3. Eliminar  0. Volver")
@@ -543,7 +553,7 @@ def menu_fisicas() -> None:
         if op == "0":
             return
         if op == "1":
-            for f in obtener_todas_fisicas():
+            for f in obtener_todas_fisicas(db):
                 print(f"  {f.id_fisica} | atraccion={f.id_atraccion}")
         elif op == "2":
             id_a = leer_uuid("ID atracción base: ")
@@ -558,7 +568,7 @@ def menu_fisicas() -> None:
                 print("No se pudo eliminar. 🚫")
 
 
-def menu_principal(usuario: Usuario) -> None:
+def menu_principal(usuario: Usuario, db) -> None:
     while True:
         print("\n====== Menú principal ======")
         print("1. Usuarios")
@@ -576,30 +586,32 @@ def menu_principal(usuario: Usuario) -> None:
             print(f"Hasta luego, {usuario.nombre_usuario}!")
             break
         elif op == "1":
-            menu_usuarios(usuario.id_usuario)
+            menu_usuarios(usuario.id_usuario, db)
         elif op == "2":
-            menu_titulares(usuario.id_usuario)
+            menu_titulares(usuario.id_usuario, db)
         elif op == "3":
-            menu_visitantes(usuario.id_usuario)
+            menu_visitantes(usuario.id_usuario, db)
         elif op == "4":
-            menu_entradas(usuario.id_usuario)
+            menu_entradas(usuario.id_usuario, db)
         elif op == "5":
-            menu_sedes(usuario.id_usuario)
+            menu_sedes(usuario.id_usuario, db)
         elif op == "6":
-            menu_atracciones(usuario.id_usuario)
+            menu_atracciones(usuario.id_usuario, db)
         elif op == "7":
-            menu_microentidades(usuario.id_usuario)
+            menu_microentidades(usuario.id_usuario, db)
         else:
             print("Opción no válida.")
 
 
 def main() -> None:
     create_tables()
-    usuario = ingresar_o_crear_usuario()
+    db = SessionLocal()
+
+    usuario = ingresar_o_crear_usuario(db)
     if not usuario:
-        print("No se pudo iniciar sesión. Saliendo.")
         return
-    menu_principal(usuario)
+
+    menu_principal(usuario, db)
 
 
 if __name__ == "__main__":
