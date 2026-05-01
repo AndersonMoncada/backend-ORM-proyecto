@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware   # ← Agregado
 from src.database.config import create_tables
-
 
 from . import (
     Usuario,
@@ -12,7 +12,6 @@ from . import (
     Atraccion,
     Entrada,
 )
-
 
 from src.Api.MicroEntidades import (
     router_acuatica,
@@ -25,12 +24,19 @@ from src.Api.MicroEntidades import (
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     import src.Entities
-
     create_tables()
     yield
 
 
-app = FastAPI(title="API", version="1.0.0", lifespan=lifespan)
+app = FastAPI(title="Parque de Diversiones API", version="1.0.0", lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:4200", "http://127.0.0.1:4200"],  # Frontend Angular
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 app.include_router(Usuario.router)
